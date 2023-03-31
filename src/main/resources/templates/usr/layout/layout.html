@@ -10,47 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
     <link rel="stylesheet" href="https://jhs512.github.io/toastr/toastr.css">
 
-    <script>
-        toastr.options = {
-            closeButton: true,
-            debug: false,
-            newestOnTop: true,
-            progressBar: true,
-            positionClass: "toast-top-right",
-            preventDuplicates: false,
-            onclick: null,
-            showDuration: "300",
-            hideDuration: "1000",
-            timeOut: "5000",
-            extendedTimeOut: "1000",
-            showEasing: "swing",
-            hideEasing: "linear",
-            showMethod: "fadeIn",
-            hideMethod: "fadeOut"
-        };
-
-        function toastNotice(msg) {
-            toastr["success"](msg, "알림");
-        }
-
-        function toastWarning(msg) {
-            toastr["warning"](msg, "알림");
-        }
-    </script>
-
-    <style>
-        @font-face {
-            font-family: 'GmarketSansMedium';
-            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        html > body {
-            font-family: "GmarketSansMedium";
-            text-underline-position: under;
-        }
-    </style>
+    <script src="/resource/common/common.js"></script>
+    <link rel="stylesheet" href="/resource/common/common.css">
 
 </head>
 
@@ -64,6 +25,7 @@
     <a href="/member/login" th:if="${@rq.isLogout()}" class="btn btn-link">로그인</a>
     <a href="/member/join" th:if="${@rq.isLogout()}" class="btn btn-link">회원가입</a>
     <a href="/member/me" th:if="${@rq.isLogin()}" class="btn btn-link">내 정보</a>
+    <a href="/instaMember/connect" th:if="${@rq.isLogin()}" class="btn btn-link">본인의 인스타그램 정보 입력</a>
     <a href="javascript:;" th:if="${@rq.isLogin()}" onclick="$(this).next().submit();" class="btn btn-link">로그아웃</a>
     <form th:if="${@rq.isLogin()}" hidden th:action="|/member/logout|" method="POST"></form>
     <span th:if="${@rq.isLogin()}" th:text="|${#authentication.principal.username}님 환영합니다.|" ></span>
@@ -71,6 +33,31 @@
 </header>
 
 <main layout:fragment="main"></main>
+
+<script th:inline="javascript">
+    //타임리프 문법(파라미터, ? 뒤에 입력된 매개변수들)
+    const params = /*[[ ${param} ]]*/ null; // 원래 /* */ 를 타임리프 문법으로 사용한다. 저렇게 사용하면 param에 값이 있으면 값이 들어가고 없으면 null이 들어가도록 할 수 있다.
+
+    if (params.msg) {
+        toastNotice(params.msg[0]);
+    }
+
+    if (params.errorMsg) {
+        toastWarning(params.errorMsg[0]);
+    }
+
+    // history.back 에 의해서 돌아온 경우에 실행됨
+    // 평소에도 실행됨
+    $(window).bind("pageshow", function (event) {
+        const localStorageKeyAboutHistoryBackErrorMsg = "historyBackErrorMsg___" + location.href;
+
+        if ( localStorage.getItem(localStorageKeyAboutHistoryBackErrorMsg) ) {
+            toastWarning(localStorage.getItem(localStorageKeyAboutHistoryBackErrorMsg));
+            localStorage.removeItem(localStorageKeyAboutHistoryBackErrorMsg);
+        }
+    });
+
+</script>
 
 </body>
 
