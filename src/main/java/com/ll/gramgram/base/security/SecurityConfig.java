@@ -1,13 +1,23 @@
 package com.ll.gramgram.base.security;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +46,19 @@ public class SecurityConfig {
                 .formLogin(
                         formLogin -> formLogin
                                 .loginPage("/member/login")
+                                /*.successHandler(new SimpleUrlAuthenticationSuccessHandler() {
+                                    @Override
+                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                        if ( isAdmin ) {
+                                            RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+                                            redirectStrategy.sendRedirect(request, response, "/adm");
+                                        }
+                                        else {
+                                            super.onAuthenticationSuccess(request, response, authentication);
+                                        }
+                                    }
+                                })*/
                                 .defaultSuccessUrl("/")
                 )
                 .logout(
@@ -47,6 +70,8 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+
 
     @Bean
     PasswordEncoder passwordEncoder(){

@@ -8,10 +8,15 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,7 +52,29 @@ public class MemberController {
         return "usr/member/login";
     }
 
+    @PostMapping("/login")
+    public String showLogin(JoinForm loginForm){
+        if(loginForm.getUsername().equals("admin")){
+            return "usr/adm/main";
+        }
+        return "redirect:/";
+    }
 
+//    @PreAuthorize("isAuthenticated()")
+//    @GetMapping("/me")
+//    public String  showMe(){
+//        return "usr/member/me";
+//    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public String showMain(Model model, Principal principal){
+        if(principal != null){
+            Member loginedMember = memberService.findByUsername(principal.getName()).orElseThrow();
+            model.addAttribute("loginedMember", loginedMember);
+        }
+        return "usr/member/me";
+    }
 
 
 

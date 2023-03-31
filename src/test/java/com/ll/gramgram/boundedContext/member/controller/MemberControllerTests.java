@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -192,5 +193,23 @@ public class MemberControllerTests {
         resultActions
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/**"));
+    }
+
+    @Test
+    @DisplayName("로그인 후에 내비바에 로그인한 회원의 username")
+        //@Rollback(value = false) // DB에 흔적이 남는다.
+    @WithUserDetails("user1")
+    void t007() throws Exception{
+        ResultActions resultActions = mvc
+                .perform(get("/member/me"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(MemberController.class)) // 핸들러 타입 /member/join으로 맵핑되는 메서드가 있는 컨트롤러가 작동되어야 한다고 정의
+                .andExpect(handler().methodName("showMe")) // /member/join으로 맵핑되는 메서드가 작동되어야 한다고 정의
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().string(containsString("""
+                        user1님 환영합니다.
+                        """.stripIndent().trim())));
     }
 }
