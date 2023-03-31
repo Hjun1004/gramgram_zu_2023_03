@@ -1,11 +1,20 @@
 <html layout:decorate="~{usr/layout/layout.html}">
 
 <head>
+  내 정보
   <title>내 정보</title>
 </head>
 
 <body>
-<main  layout:fragment="main">나는 누구누구입니다.</main>
+<main  layout:fragment="main">나는 누구누구입니다.
+  <div>번호 : <span th:if="${@rq.isLogin()}" th:text="${@rq.member.id}"></span></div>
+  <div>이름 : <span th:if="${@rq.isLogin()}" th:text="|${@rq.member.username}|"></span></div>
+  <div>가입날짜 : <span th:if="${@rq.isLogin()}" th:text="${#temporals.format(@rq.member.createDate, 'yyyy-MM-dd HH:mm')}"></span></div>
+  <div>수정날짜 : <span th:if="${@rq.isLogin()}" th:text="${#temporals.format(@rq.member.modifyDate, 'yyyy-MM-dd HH:mm')}"></span></div>
+</main>
+
+
+
 </body>
 
 </html>

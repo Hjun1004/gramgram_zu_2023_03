@@ -60,21 +60,13 @@ public class MemberController {
         return "redirect:/";
     }
 
-//    @PreAuthorize("isAuthenticated()")
-//    @GetMapping("/me")
-//    public String  showMe(){
-//        return "usr/member/me";
-//    }
-
-    @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public String showMain(Model model, Principal principal){
-        if(principal != null){
-            Member loginedMember = memberService.findByUsername(principal.getName()).orElseThrow();
-            model.addAttribute("loginedMember", loginedMember);
-        }
+    @GetMapping("/me")
+    public String  showMe(){
         return "usr/member/me";
     }
+
+
 
 
 
